@@ -10,29 +10,54 @@ app.use(express.static('public'));
 app.use(fileUpload());
 app.set('view engine', 'ejs');
 
-// Create directories if they don't exist
-const imagesPath = path.join(__dirname, 'public/uploads/images');
-const videosPath = path.join(__dirname, 'public/uploads/videos');
-fs.mkdirSync(imagesPath, { recursive: true });
-fs.mkdirSync(videosPath, { recursive: true });
+// Create directories if not in Vercel environment
+if (process.env.VERCEL !== '1') {
+    const imagesPath = path.join(__dirname, 'public/uploads/images');
+    const videosPath = path.join(__dirname, 'public/uploads/videos');
+    fs.mkdirSync(imagesPath, { recursive: true });
+    fs.mkdirSync(videosPath, { recursive: true });
+}
 
 // Routes
-app.get('/', (req, res) => {
-    const images = fs.readdirSync(imagesPath).map(file => ({
-        name: file,
-        type: 'image'
-    }));
-    
-    const videos = fs.readdirSync(videosPath).map(file => ({
-        name: file,
-        type: 'video'
-    }));
-    
-    res.render('gallery', { images, videos });
+app.get('/', async (req, res) => {
+    try {
+        let images = [];
+        let videos = [];
+
+        if (process.env.VERCEL === '1') {
+            // Untuk Vercel, gunakan temporary storage atau cloud storage
+            // Contoh menggunakan array kosong untuk demo
+            images = [];
+            videos = [];
+        } else {
+            const imagesPath = path.join(__dirname, 'public/uploads/images');
+            const videosPath = path.join(__dirname, 'public/uploads/videos');
+            
+            images = fs.readdirSync(imagesPath).map(file => ({
+                name: file,
+                type: 'image'
+            }));
+            
+            videos = fs.readdirSync(videosPath).map(file => ({
+                name: file,
+                type: 'video'
+            }));
+        }
+        
+        res.render('gallery', { images, videos });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // Upload endpoint
-app.post('/upload', (req, res) => {
+app.post('/upload', async (req, res) => {
+    if (process.env.VERCEL === '1') {
+        // Untuk Vercel, implementasikan cloud storage
+        return res.status(200).send('Upload disabled in Vercel deployment');
+    }
+
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
@@ -52,5 +77,10 @@ app.post('/upload', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// For Vercel serverless deployment
+if (process.env.VERCEL === '1') {
+    module.exports = app;
+} else {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
