@@ -9,6 +9,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(fileUpload());
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views')); // Add this line
 
 // Create directories if not in Vercel environment
 if (process.env.VERCEL !== '1') {
