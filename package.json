@@ -1,0 +1,19 @@
+{
+  "name": "elegant-gallery",
+  "version": "1.0.0",
+  "description": "Elegant photo and video gallery",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "ejs": "^3.1.6",
+    "multer": "^1.4.3",
+    "express-fileupload": "^1.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}

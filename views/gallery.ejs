@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Elegant Gallery</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Elegant Media Gallery</h1>
+        
+        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+            <input type="file" name="media" accept="image/*,video/*">
+            <button type="submit">Upload</button>
+        </form>
+
+        <div class="gallery-container">
+            <div class="gallery-section">
+                <h2>Photos Gallery</h2>
+                <div class="gallery">
+                    <% images.forEach(item => { %>
+                        <div class="gallery-item">
+                            <img src="/uploads/images/<%= item.name %>" alt="<%= item.name %>">
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div class="gallery-section">
+                <h2>Videos Gallery</h2>
+                <div class="gallery">
+                    <% videos.forEach(item => { %>
+                        <div class="gallery-item">
+                            <video controls>
+                                <source src="/uploads/videos/<%= item.name %>" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
